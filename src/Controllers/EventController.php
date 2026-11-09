@@ -6,6 +6,7 @@ namespace HponeTuakNyi\EventManagerBackend\Controllers;
 
 use HponeTuakNyi\EventManagerBackend\DTOs\UploadPayloadDto;
 use HponeTuakNyi\EventManagerBackend\Services\EventService;
+use HponeTuakNyi\EventManagerBackend\Support\Logger;
 use HponeTuakNyi\EventManagerBackend\Validators\UploadPayloadValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -46,6 +47,7 @@ final class EventController
             $result = $this->eventService->upload($payload);
             return $this->jsonResponse($result, 200);
         } catch (Throwable $e) {
+            // Logger::error('Event upload failed', $this->exceptionContext($e));
             return $this->jsonResponse([
                 'status' => 'error',
                 'message' => 'An error occurred while uploading events.',
@@ -64,6 +66,7 @@ final class EventController
                 'events' => $events,
             ], 200);
         } catch (Throwable $e) {
+            // Logger::error('Listing events failed', $this->exceptionContext($e));
             return $this->jsonResponse([
                 'status' => 'error',
                 'message' => 'An error occurred while retrieving events.',
@@ -99,6 +102,7 @@ final class EventController
                 'event' => $event,
             ], 200);
         } catch (Throwable $e) {
+                // Logger::error('Retrieving event failed', $this->exceptionContext($e) + ['id' => $id]);
             return $this->jsonResponse([
                 'status' => 'error',
                 'message' => 'An error occurred while retrieving the event.',
@@ -134,12 +138,27 @@ final class EventController
                 'message' => "Event with ID {$id} deleted successfully.",
             ], 200);
         } catch (Throwable $e) {
+            // Logger::error('Deleting event failed', $this->exceptionContext($e) + ['id' => $id]);
             return $this->jsonResponse([
                 'status' => 'error',
                 'message' => 'An error occurred while deleting the event.',
                 'details' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function exceptionContext(Throwable $e): array
+    {
+        return [
+            'exception' => $e::class,
+            'message' => $e->getMessage(),
+            'file' => $e->getFile() . ':' . $e->getLine(),
+            'previous' => $e->getPrevious()?->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ];
     }
 
     /**

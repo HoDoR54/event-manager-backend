@@ -13,9 +13,10 @@
         }
     },
     "scripts": {
-        "start": "php -S 127.0.0.1:8080 -t public",
+        "start": "php -S 0.0.0.0:8080 -t public",
         "lint": "find src public -name '*.php' -print0 | xargs -0 -n1 php -l",
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit",
+        "migrate": "php scripts/migrate.php"
     },
     "require": {
         "slim/slim": "^4.0",
