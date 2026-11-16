@@ -1,0 +1,139 @@
+[
+    {
+        "id": 1,
+        "clientId": 1,
+        "name": "Google I/O Extended 2026",
+        "date": "2026-11-20",
+        "location": "Tech Park Auditorium, Hall A",
+        "organiser": "Google Developer Group",
+        "type": "CONFERENCE",
+        "status": "UPCOMING",
+        "description": "Annual community-led developer conference covering modern Android, Jetpack Compose, Gemini AI, and Cloud Architecture.",
+        "contactEmail": "gdg-events@techhub.org",
+        "contactPhone": "+1 555-0199",
+        "createdAt": "2026-11-01 09:00:00",
+        "updatedAt": "2026-11-01 09:00:00",
+        "sessions": [
+            {
+                "id": 1,
+                "eventId": 1,
+                "sessionId": "SES-01",
+                "name": "Keynote: Next-Gen AI & Mobile",
+                "time": "09:00 - 10:15",
+                "type": "KEYNOTE",
+                "speaker": "Dr. Sarah Lin (Google)",
+                "room": "Main Hall",
+                "description": "Opening keynote on generative AI models running directly on device."
+            },
+            {
+                "id": 2,
+                "eventId": 1,
+                "sessionId": "SES-02",
+                "name": "Hands-on Kotlin Multiplatform",
+                "time": "10:30 - 12:00",
+                "type": "WORKSHOP",
+                "speaker": "Marcus Vance",
+                "room": "Lab 3",
+                "description": "Building shared business logic across Android and iOS."
+            },
+            {
+                "id": 3,
+                "eventId": 1,
+                "sessionId": "SES-03",
+                "name": "Networking & Partner Showcase",
+                "time": "12:00 - 13:30",
+                "type": "NETWORKING",
+                "speaker": null,
+                "room": "Atrium",
+                "description": "Lunch, project demonstrations, and partner career fair."
+            }
+        ],
+        "images": []
+    },
+    {
+        "id": 2,
+        "clientId": 2,
+        "name": "KotlinConf Global Summit",
+        "date": "2026-11-25",
+        "location": "Amsterdam Convention Hall",
+        "organiser": "JetBrains Community",
+        "type": "CONFERENCE",
+        "status": "UPCOMING",
+        "description": "The premier conference for developers building with Kotlin on Android, server-side, and cross-platform stacks.",
+        "contactEmail": "contact@kotlinconf.com",
+        "contactPhone": "+31 20 555 1234",
+        "createdAt": "2026-11-02 10:00:00",
+        "updatedAt": "2026-11-02 10:00:00",
+        "sessions": [
+            {
+                "id": 4,
+                "eventId": 2,
+                "sessionId": "SES-10",
+                "name": "Deep Dive: Compose Multiplatform 2.0",
+                "time": "10:00 - 11:00",
+                "type": "PRESENTATION",
+                "speaker": "Elena Rostova",
+                "room": "Track 1",
+                "description": "Architecting high-performance UI across desktop, web, and mobile."
+            },
+            {
+                "id": 5,
+                "eventId": 2,
+                "sessionId": "SES-11",
+                "name": "Coroutines Internals and Best Practices",
+                "time": "11:15 - 12:30",
+                "type": "WORKSHOP",
+                "speaker": "Roman Elizarov",
+                "room": "Workshop Studio",
+                "description": "Structuring asynchronous pipelines and error propagation."
+            }
+        ],
+        "images": []
+    },
+    {
+        "id": 3,
+        "clientId": 3,
+        "name": "Advanced React Native Masterclass",
+        "date": "2026-12-02",
+        "location": "Design & Code Lab, Room 402",
+        "organiser": "Mobile Creators Guild",
+        "type": "WORKSHOP",
+        "status": "UPCOMING",
+        "description": "Intensive hands-on workshop covering the New Architecture, Expo Router SDK 58, and native modules integration.",
+        "contactEmail": "workshops@mobileguild.dev",
+        "contactPhone": "+1 555-0422",
+        "createdAt": "2026-11-03 14:00:00",
+        "updatedAt": "2026-11-03 14:00:00",
+        "sessions": [
+            {
+                "id": 6,
+                "eventId": 3,
+                "sessionId": "SES-20",
+                "name": "JSI and TurboModules from Scratch",
+                "time": "13:00 - 15:00",
+                "type": "WORKSHOP",
+                "speaker": "David Kim",
+                "room": "Room 402",
+                "description": "Direct C++ communication without serializing JSON over the bridge."
+            }
+        ],
+        "images": []
+    },
+    {
+        "id": 4,
+        "clientId": 4,
+        "name": "Cybersecurity In Cloud Operations",
+        "date": "2026-10-15",
+        "location": "Metropolitan Center",
+        "organiser": "InfoSec Alliance",
+        "type": "SEMINAR",
+        "status": "COMPLETED",
+        "description": "Executive seminar examining zero-trust security postures and compliance for enterprise workloads.",
+        "contactEmail": "info@infosecalliance.org",
+        "contactPhone": null,
+        "createdAt": "2026-10-01 08:30:00",
+        "updatedAt": "2026-10-01 08:30:00",
+        "sessions": [],
+        "images": []
+    }
+]

@@ -10,6 +10,9 @@ require_once __DIR__ . '/../src/db.php';
 function sendJson(mixed $data, int $status = 200): void
 {
     http_response_code($status);
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization');
     header('Content-Type: application/json; charset=UTF-8');
     echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     exit;
@@ -133,11 +136,11 @@ $uri = $_SERVER['REQUEST_URI'] ?? '/';
 $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 $path = rtrim($path, '/') ?: '/';
 
-// Optional preflight CORS support
+// Preflight CORS support
 if ($method === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Accept');
+    header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization');
     http_response_code(204);
     exit;
 }
