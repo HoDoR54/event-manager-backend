@@ -88,16 +88,17 @@ function checkDbHealth(): bool
 }
 
 /**
- * Synchronizes events and replaces their sessions inside a single transaction.
+ * Synchronizes events, replaces their sessions and images inside a single transaction.
  *
  * @param list<array<string, mixed>> $events
- * @return array{eventsSynced: int, sessionsSynced: int}
+ * @return array{eventsSynced: int, sessionsSynced: int, imagesSynced: int}
  */
 function syncEvents(array $events): array
 {
     $pdo = getDb();
     $eventsSynced = 0;
     $sessionsSynced = 0;
+    $imagesSynced = 0;
 
     $pdo->beginTransaction();
 
@@ -137,6 +138,18 @@ function syncEvents(array $events): array
                 event_id, session_id, name, time, type, speaker, room, description
             ) VALUES (
                 :event_id, :session_id, :name, :time, :type, :speaker, :room, :description
+            )'
+        );
+
+        $deleteImagesStmt = $pdo->prepare(
+            'DELETE FROM event_images WHERE event_id = :event_id'
+        );
+
+        $insertImageStmt = $pdo->prepare(
+            'INSERT INTO event_images (
+                event_id, image_url, image_data, caption
+            ) VALUES (
+                :event_id, :image_url, :image_data, :caption
             )'
         );
 
@@ -212,6 +225,31 @@ function syncEvents(array $events): array
                     $sessionsSynced++;
                 }
             }
+
+            // Replace images for this event
+            $deleteImagesStmt->execute([':event_id' => $eventId]);
+
+            if (isset($event['images']) && is_array($event['images'])) {
+                foreach ($event['images'] as $image) {
+                    if (!is_array($image)) {
+                        continue;
+                    }
+
+                    $imageUrl = isset($image['imageUrl']) && $image['imageUrl'] !== '' ? (string) $image['imageUrl'] : null;
+                    $imageData = isset($image['imageData']) && $image['imageData'] !== '' ? (string) $image['imageData'] : null;
+                    $caption = isset($image['caption']) && $image['caption'] !== '' ? (string) $image['caption'] : null;
+
+                    if ($imageUrl !== null || $imageData !== null) {
+                        $insertImageStmt->execute([
+                            ':event_id' => $eventId,
+                            ':image_url' => $imageUrl,
+                            ':image_data' => $imageData,
+                            ':caption' => $caption,
+                        ]);
+                        $imagesSynced++;
+                    }
+                }
+            }
         }
 
         $pdo->commit();
@@ -219,6 +257,7 @@ function syncEvents(array $events): array
         return [
             'eventsSynced' => $eventsSynced,
             'sessionsSynced' => $sessionsSynced,
+            'imagesSynced' => $imagesSynced,
         ];
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
@@ -229,13 +268,14 @@ function syncEvents(array $events): array
 }
 
 /**
- * Formats event and nested session rows into the API response format.
+ * Formats event, nested session rows, and image rows into the API response format.
  *
  * @param array<string, mixed> $event
  * @param list<array<string, mixed>> $sessions
+ * @param list<array<string, mixed>> $images
  * @return array<string, mixed>
  */
-function formatEvent(array $event, array $sessions): array
+function formatEvent(array $event, array $sessions, array $images = []): array
 {
     return [
         'id' => (int) $event['id'],
@@ -262,11 +302,19 @@ function formatEvent(array $event, array $sessions): array
             'room' => $s['room'] !== null ? (string) $s['room'] : null,
             'description' => $s['description'] !== null ? (string) $s['description'] : null,
         ], $sessions),
+        'images' => array_map(static fn (array $img): array => [
+            'id' => (int) $img['id'],
+            'eventId' => (int) $img['event_id'],
+            'imageUrl' => $img['image_url'] !== null ? (string) $img['image_url'] : null,
+            'imageData' => $img['image_data'] !== null ? (string) $img['image_data'] : null,
+            'caption' => $img['caption'] !== null ? (string) $img['caption'] : null,
+            'createdAt' => (string) $img['created_at'],
+        ], $images),
     ];
 }
 
 /**
- * Retrieves all events along with their nested sessions.
+ * Retrieves all events along with their nested sessions and images.
  *
  * @return list<array<string, mixed>>
  */
@@ -281,19 +329,24 @@ function getAllEvents(): array
     }
 
     $sessionStmt = $pdo->prepare('SELECT * FROM sessions WHERE event_id = :event_id ORDER BY id ASC');
+    $imageStmt = $pdo->prepare('SELECT * FROM event_images WHERE event_id = :event_id ORDER BY id ASC');
 
     $result = [];
     foreach ($events as $event) {
         $sessionStmt->execute([':event_id' => $event['id']]);
         $sessions = $sessionStmt->fetchAll();
-        $result[] = formatEvent($event, $sessions);
+
+        $imageStmt->execute([':event_id' => $event['id']]);
+        $images = $imageStmt->fetchAll();
+
+        $result[] = formatEvent($event, $sessions, $images);
     }
 
     return $result;
 }
 
 /**
- * Retrieves a single event with its sessions by ID.
+ * Retrieves a single event with its sessions and images by ID.
  *
  * @return array<string, mixed>|null
  */
@@ -312,11 +365,45 @@ function getEventById(int $id): ?array
     $sessionStmt->execute([':event_id' => $id]);
     $sessions = $sessionStmt->fetchAll();
 
-    return formatEvent($event, $sessions);
+    $imageStmt = $pdo->prepare('SELECT * FROM event_images WHERE event_id = :event_id ORDER BY id ASC');
+    $imageStmt->execute([':event_id' => $id]);
+    $images = $imageStmt->fetchAll();
+
+    return formatEvent($event, $sessions, $images);
 }
 
 /**
- * Deletes an event by its ID. Sessions cascade delete in database.
+ * Adds an image record directly to an event.
+ */
+function addEventImage(int $eventId, ?string $imageUrl, ?string $imageData, ?string $caption = null): int
+{
+    $pdo = getDb();
+    $stmt = $pdo->prepare(
+        'INSERT INTO event_images (event_id, image_url, image_data, caption) VALUES (:event_id, :image_url, :image_data, :caption) RETURNING id'
+    );
+    $stmt->execute([
+        ':event_id' => $eventId,
+        ':image_url' => $imageUrl,
+        ':image_data' => $imageData,
+        ':caption' => $caption,
+    ]);
+    $row = $stmt->fetch();
+    return (int) $row['id'];
+}
+
+/**
+ * Deletes an image record by ID.
+ */
+function deleteEventImage(int $imageId): bool
+{
+    $pdo = getDb();
+    $stmt = $pdo->prepare('DELETE FROM event_images WHERE id = :id');
+    $stmt->execute([':id' => $imageId]);
+    return $stmt->rowCount() > 0;
+}
+
+/**
+ * Deletes an event by its ID. Sessions and images cascade delete in database.
  */
 function deleteEventById(int $id): bool
 {

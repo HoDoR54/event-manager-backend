@@ -100,6 +100,25 @@ function validateUploadPayload(array $data): array
                 }
             }
         }
+
+        if (isset($event['images'])) {
+            if (!is_array($event['images'])) {
+                $errors[] = "{$prefix}: 'images' must be an array.";
+            } else {
+                foreach ($event['images'] as $imgIndex => $img) {
+                    $iPrefix = "{$prefix} Image #{$imgIndex}";
+                    if (!is_array($img)) {
+                        $errors[] = "{$iPrefix} must be an object.";
+                        continue;
+                    }
+                    $hasUrl = isset($img['imageUrl']) && trim((string) $img['imageUrl']) !== '';
+                    $hasData = isset($img['imageData']) && trim((string) $img['imageData']) !== '';
+                    if (!$hasUrl && !$hasData) {
+                        $errors[] = "{$iPrefix}: either 'imageUrl' or 'imageData' must be provided.";
+                    }
+                }
+            }
+        }
     }
 
     return [
@@ -165,12 +184,14 @@ if ($method === 'POST' && $path === '/api/events/upload') {
         sendJson([
             'status' => 'success',
             'message' => sprintf(
-                'Successfully uploaded %d events and %d sessions.',
+                'Successfully uploaded %d events, %d sessions, and %d images.',
                 $result['eventsSynced'],
-                $result['sessionsSynced']
+                $result['sessionsSynced'],
+                $result['imagesSynced']
             ),
             'uploadedCount' => $result['eventsSynced'],
             'sessionCount' => $result['sessionsSynced'],
+            'imageCount' => $result['imagesSynced'],
             'timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
         ], 200);
     } catch (Throwable $e) {
@@ -195,6 +216,65 @@ if ($method === 'GET' && $path === '/api/events') {
         sendJson([
             'status' => 'error',
             'message' => 'An error occurred while retrieving events.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+// POST /api/events/{id}/images
+if ($method === 'POST' && preg_match('#^/api/events/(\d+)/images$#', $path, $matches)) {
+    $id = (int) $matches[1];
+    $rawInput = file_get_contents(PHP_SAPI === 'cli' ? 'php://stdin' : 'php://input');
+    $data = json_decode($rawInput ?: '', true);
+
+    $imageUrl = isset($data['imageUrl']) && $data['imageUrl'] !== '' ? (string) $data['imageUrl'] : null;
+    $imageData = isset($data['imageData']) && $data['imageData'] !== '' ? (string) $data['imageData'] : null;
+    $caption = isset($data['caption']) && $data['caption'] !== '' ? (string) $data['caption'] : null;
+
+    if ($imageUrl === null && $imageData === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => "Either 'imageUrl' or 'imageData' is required.",
+        ], 422);
+    }
+
+    try {
+        $imageId = addEventImage($id, $imageUrl, $imageData, $caption);
+        sendJson([
+            'status' => 'success',
+            'message' => 'Image added successfully.',
+            'imageId' => $imageId,
+            'eventId' => $id,
+        ], 201);
+    } catch (Throwable $e) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'An error occurred while adding the image.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+// DELETE /api/images/{id}
+if ($method === 'DELETE' && preg_match('#^/api/images/(\d+)$#', $path, $matches)) {
+    $imageId = (int) $matches[1];
+    try {
+        $deleted = deleteEventImage($imageId);
+        if (!$deleted) {
+            sendJson([
+                'status' => 'error',
+                'message' => "Image with ID {$imageId} not found.",
+            ], 404);
+        }
+
+        sendJson([
+            'status' => 'success',
+            'message' => "Image with ID {$imageId} deleted successfully.",
+        ], 200);
+    } catch (Throwable $e) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'An error occurred while deleting the image.',
             'details' => $e->getMessage(),
         ], 500);
     }
