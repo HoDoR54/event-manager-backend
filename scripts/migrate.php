@@ -2,16 +2,10 @@
 
 declare(strict_types=1);
 
-use Dotenv\Dotenv;
-use HponeTuakNyi\EventManagerBackend\Config\Database;
-
-require __DIR__ . '/../vendor/autoload.php';
-
-$dotenv = Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->safeLoad();
+require_once __DIR__ . '/../src/db.php';
 
 try {
-    $pdo = Database::connect();
+    $pdo = getDb();
     echo "Connected to database.\n";
 
     $migrationsDir = __DIR__ . '/../database/migrations';

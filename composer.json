@@ -1,29 +1,10 @@
 {
     "name": "hpone-tuak-nyi/event-manager-backend",
-    "description": "REST API for final year event manager mobile app",
+    "description": "Minimal pure PHP REST API for event manager",
     "type": "project",
-    "autoload": {
-        "psr-4": {
-            "HponeTuakNyi\\EventManagerBackend\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "HponeTuakNyi\\EventManagerBackend\\Tests\\": "tests/"
-        }
-    },
     "scripts": {
         "start": "php -S 0.0.0.0:8080 -t public",
-        "lint": "find src public -name '*.php' -print0 | xargs -0 -n1 php -l",
-        "test": "vendor/bin/phpunit",
+        "lint": "find src public scripts -name '*.php' -print0 | xargs -0 -n1 php -l",
         "migrate": "php scripts/migrate.php"
-    },
-    "require": {
-        "slim/slim": "^4.0",
-        "slim/psr7": "^1.8",
-        "vlucas/phpdotenv": "^5.7"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^12.5"
     }
 }

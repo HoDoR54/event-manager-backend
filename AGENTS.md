@@ -6,10 +6,12 @@ This guide provides critical context, architecture patterns, coding conventions,
 
 ## 1. Quick Overview
 
-- **App Purpose**: REST API service providing cloud storage, synchronization, and retrieval for the Event Manager ecosystem (events with nested sessions).
-- **Tech Stack**: PHP 8.3+, Slim 4 framework, PSR-7 HTTP message interfaces (`slim/psr7`), PHP-DotEnv (`vlucas/phpdotenv`), PostgreSQL with PDO, PHPUnit 12.
-- **Architecture**: Clean Architecture / Layered Design: DTOs, Repositories (Interface + PDO implementation), Domain Services, Controllers, Validators, Routes, Migrations.
-- **Port / Server**: `127.0.0.1:8080` (or `0.0.0.0:8080` in container / remote).
+- **App Purpose**: Minimal REST API service providing cloud storage, synchronization, and retrieval for the Event Manager ecosystem (events with nested sessions).
+- **Tech Stack**: Pure PHP 8.3+, zero external runtime dependencies, PostgreSQL with native PDO.
+- **Architecture**: Clean 2-File Minimal Setup:
+  - `public/index.php`: Request routing, payload validation, and HTTP/JSON responses.
+  - `src/db.php`: Database connection (`.env` loading, PDO) and PostgreSQL transaction/query helpers.
+- **Port / Server**: `127.0.0.1:8080` (or `0.0.0.0:8080`).
 
 ---
 
@@ -23,55 +25,23 @@ event-manager-backend/
 │       └── 001_create_events_and_sessions_tables.sql # Raw idempotent SQL migrations
 │
 ├── public/
-│   └── index.php                                     # HTTP entry point (Slim 4 application)
+│   └── index.php                                     # HTTP entry point, router, and validation
 │
 ├── scripts/
 │   ├── migrate.php                                   # Migration execution CLI script
 │   └── test-db.php                                   # Connectivity diagnostic script
 │
 ├── src/
-│   ├── Config/
-│   │   └── Database.php                              # PDO connection provider using .env
-│   ├── Controllers/
-│   │   ├── HealthController.php                      # Health status and DB ping endpoint
-│   │   └── EventController.php                       # Event upload, list, get, and delete actions
-│   ├── DTOs/
-│   │   ├── SessionDto.php                            # Immutable session data transfer object
-│   │   ├── EventDto.php                              # Immutable event with nested sessions DTO
-│   │   └── UploadPayloadDto.php                      # Bulk cloud upload payload DTO
-│   ├── Repositories/
-│   │   ├── EventRepositoryInterface.php              # Storage contract for event operations
-│   │   └── PostgresEventRepository.php               # Transactional PostgreSQL implementation
-│   ├── Services/
-│   │   ├── HealthService.php                         # Service pinging DB status
-│   │   └── EventService.php                          # Core business logic coordinating events
-│   ├── Validators/
-│   │   └── UploadPayloadValidator.php                # Strict payload and field validator
-│   ├── Routes/
-│   │   ├── api.php                                   # Root greeting endpoint
-│   │   ├── HealthRoute.php                           # /api/health endpoint
-│   │   └── EventRoute.php                            # /api/events/* endpoints
-│   └── routes.php                                    # Master route aggregator
-│
-├── tests/
-│   ├── Unit/
-│   │   ├── EventDtoTest.php                          # DTO transformation tests
-│   │   ├── EventServiceTest.php                      # Service business logic tests
-│   │   └── UploadPayloadValidatorTest.php            # Strict validation rule tests
-│   └── Integration/
-│       └── EventApiTest.php                          # HTTP request / response simulation tests
+│   └── db.php                                        # Database connection provider and query functions
 │
 ├── docs/                                             # Modular documentation & logs
 │   ├── README.md
 │   ├── ARCHITECTURE.md
 │   └── features/
-│       └── feature-cloud-upload-api/
-│           ├── plan.md
-│           ├── log.md
-│           └── notes.md
 │
-├── composer.json                                     # Dependencies, scripts, and autoloading
-└── phpunit.xml                                       # PHPUnit 12 configuration
+├── .env                                              # Environment variables (DB credentials)
+├── .env.example                                      # Environment template
+└── composer.json                                     # Command shortcuts (start, lint, migrate)
 ```
 
 ---
@@ -83,23 +53,18 @@ event-manager-backend/
                │
                │ HTTP POST /api/events/upload (application/json)
                ▼
-       [ Slim 4 Router ]
+      [ public/index.php ]
+               │
+               ├──> validateUploadPayload() (Fails -> 400 / 422 JSON)
+               │
+               ▼ (Passes)
+        [ src/db.php ]
                │
                ▼
-    [ EventController ] ────> [ UploadPayloadValidator ]
-               │                     │ (Fails -> 400 / 422 JSON)
-               │ (Passes)
-               ▼
-       [ EventService ]
-               │
-               ▼
- [ EventRepositoryInterface ]
-               ▲
-               │ (Implements)
- [ PostgresEventRepository ] ──> PDO Transaction (BEGIN / COMMIT / ROLLBACK)
-                                 ├── Upsert events table
-                                 ├── Cascade replace sessions table
-                                 └── Return synced counts
+        PDO Transaction (BEGIN / COMMIT / ROLLBACK)
+               ├── Upsert events table
+               ├── Cascade replace sessions table
+               └── Return synced counts
 ```
 
 ---
@@ -108,8 +73,9 @@ event-manager-backend/
 
 | Method | Endpoint | Description | Request Body | Response Codes |
 | :---: | :--- | :--- | :--- | :---: |
+| `GET` | `/` | Root API greeting | None | 200 |
 | `GET` | `/api/health` | Service and database health check | None | 200 / 503 |
-| `POST` | `/api/events/upload` | Atomic bulk upload of events & sessions | `UploadPayloadDto` (JSON) | 200 / 400 / 422 / 500 |
+| `POST` | `/api/events/upload` | Atomic bulk upload of events & sessions | Bulk JSON Payload | 200 / 400 / 422 / 500 |
 | `GET` | `/api/events` | Retrieve all events with nested sessions | None | 200 / 500 |
 | `GET` | `/api/events/{id}` | Retrieve single event with nested sessions | None | 200 / 404 / 500 |
 | `DELETE` | `/api/events/{id}` | Delete single event and cascade delete sessions | None | 200 / 404 / 500 |
@@ -153,29 +119,33 @@ event-manager-backend/
 ## 5. Coding Conventions & Invariants
 
 1. **Strict Types**: Every PHP file must declare `declare(strict_types=1);` at the top.
-2. **DTO Immutability**: All DTO properties are `public readonly`.
-3. **Validation First**: Always validate incoming request payloads before instantiating domain models or invoking services.
+2. **Zero Runtime Dependencies**: Keep the backend pure PHP without bloated frameworks.
+3. **Validation First**: Always validate incoming request payloads before invoking database operations.
 4. **Transactions for Mutations**: All multi-step database mutations must use `beginTransaction()`, `commit()`, and `rollBack()` inside `try ... catch (Throwable $e)`.
-5. **Decoupled Architecture**: Controllers never run raw SQL queries; they delegate exclusively to services, which call repository interfaces.
-6. **No External Network Dependencies in Unit Tests**: Unit tests must use PHPUnit mocks or test doubles to enable running tests without requiring a live database or Docker.
+5. **Prepared Statements**: Always use PDO prepared statements with bound parameters to prevent SQL injection.
 
 ---
 
-## 6. Common Composer & CLI Commands
+## 6. Common Commands (Makefile / CLI)
 
-- **Run Test Suite**:
+- **Start Local Server**:
   ```bash
-  composer test
+  make run
+  # or: make run PORT=8080
+  ```
+- **Run Database Migrations**:
+  ```bash
+  make migrate
+  ```
+- **Check Database Connectivity**:
+  ```bash
+  make test-db
   ```
 - **Lint All PHP Files**:
   ```bash
-  composer lint
+  make lint
   ```
-- **Run Database Migrations** (when Docker / PostgreSQL is running):
+- **Show All Makefile Targets**:
   ```bash
-  php scripts/migrate.php
-  ```
-- **Start Local Development Server**:
-  ```bash
-  composer start
+  make help
   ```
