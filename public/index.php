@@ -145,6 +145,34 @@ if ($method === 'OPTIONS') {
     exit;
 }
 
+// Helper: Extracts Bearer token from headers
+function getBearerToken(): ?string
+{
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if ($header === '' && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $header = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    }
+    if (preg_match('/Bearer\s+(\S+)/i', $header, $matches)) {
+        return $matches[1];
+    }
+    return null;
+}
+
+// Helper: Retrieves currently authenticated user
+function getAuthenticatedUser(): ?array
+{
+    $token = getBearerToken();
+    if ($token === null) {
+        return null;
+    }
+    $payload = verifyAuthToken($token);
+    if ($payload === null || !isset($payload['uid'])) {
+        return null;
+    }
+    return findUserById((int) $payload['uid']);
+}
+
 // GET /
 if ($method === 'GET' && $path === '/') {
     header('Content-Type: text/plain; charset=UTF-8');
@@ -159,6 +187,176 @@ if ($method === 'GET' && $path === '/api/health') {
         'status' => $dbUp ? 'ok' : 'error',
         'database' => $dbUp ? 'up' : 'down',
     ], $dbUp ? 200 : 503);
+}
+
+// ==========================================
+// AUTHENTICATION ROUTES
+// ==========================================
+
+// POST /api/auth/login
+if ($method === 'POST' && $path === '/api/auth/login') {
+    $rawInput = file_get_contents(PHP_SAPI === 'cli' ? 'php://stdin' : 'php://input');
+    $data = json_decode($rawInput ?: '', true);
+
+    $email = isset($data['email']) ? trim((string) $data['email']) : '';
+    $password = isset($data['password']) ? (string) $data['password'] : '';
+
+    if ($email === '' || $password === '') {
+        sendJson([
+            'status' => 'error',
+            'message' => "Both 'email' and 'password' are required.",
+        ], 400);
+    }
+
+    $user = authenticateUser($email, $password);
+    if ($user === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Invalid email or password.',
+        ], 401);
+    }
+
+    $token = generateAuthToken($user);
+    sendJson([
+        'status' => 'success',
+        'message' => 'Login successful.',
+        'token' => $token,
+        'user' => $user,
+    ], 200);
+}
+
+// POST /api/auth/register
+if ($method === 'POST' && $path === '/api/auth/register') {
+    $rawInput = file_get_contents(PHP_SAPI === 'cli' ? 'php://stdin' : 'php://input');
+    $data = json_decode($rawInput ?: '', true);
+
+    $name = isset($data['name']) ? trim((string) $data['name']) : '';
+    $email = isset($data['email']) ? trim((string) $data['email']) : '';
+    $password = isset($data['password']) ? (string) $data['password'] : '';
+    $role = isset($data['role']) ? trim((string) $data['role']) : 'USER';
+
+    $errors = [];
+    if ($name === '') {
+        $errors[] = "'name' is required.";
+    }
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "A valid 'email' is required.";
+    }
+    if (strlen($password) < 4) {
+        $errors[] = "'password' must be at least 4 characters.";
+    }
+
+    if (!empty($errors)) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Validation failed.',
+            'errors' => $errors,
+        ], 422);
+    }
+
+    try {
+        $newUser = registerUser($name, $email, $password, $role);
+        $token = generateAuthToken($newUser);
+        sendJson([
+            'status' => 'success',
+            'message' => 'User registered successfully.',
+            'token' => $token,
+            'user' => $newUser,
+        ], 201);
+    } catch (Throwable $e) {
+        sendJson([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], 409);
+    }
+}
+
+// GET /api/auth/me
+if ($method === 'GET' && $path === '/api/auth/me') {
+    $user = getAuthenticatedUser();
+    if ($user === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Unauthorized. Please provide a valid Bearer token.',
+        ], 401);
+    }
+
+    sendJson([
+        'status' => 'success',
+        'user' => $user,
+    ], 200);
+}
+
+// ==========================================
+// USER FAVORITES ROUTES
+// ==========================================
+
+// GET /api/favorites
+if ($method === 'GET' && $path === '/api/favorites') {
+    $user = getAuthenticatedUser();
+    if ($user === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Unauthorized. Please provide a valid Bearer token.',
+        ], 401);
+    }
+
+    $favIds = getUserFavoriteEventIds((int) $user['id']);
+    sendJson([
+        'status' => 'success',
+        'favoriteEventIds' => $favIds,
+        'count' => count($favIds),
+    ], 200);
+}
+
+// POST /api/favorites
+if ($method === 'POST' && $path === '/api/favorites') {
+    $user = getAuthenticatedUser();
+    if ($user === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Unauthorized. Please provide a valid Bearer token.',
+        ], 401);
+    }
+
+    $rawInput = file_get_contents(PHP_SAPI === 'cli' ? 'php://stdin' : 'php://input');
+    $data = json_decode($rawInput ?: '', true);
+    $eventId = isset($data['eventId']) ? (int) $data['eventId'] : 0;
+
+    if ($eventId <= 0) {
+        sendJson([
+            'status' => 'error',
+            'message' => "'eventId' is required and must be a positive integer.",
+        ], 422);
+    }
+
+    addUserFavorite((int) $user['id'], $eventId);
+    sendJson([
+        'status' => 'success',
+        'message' => 'Event favorited.',
+        'eventId' => $eventId,
+        'isFavorite' => true,
+    ], 200);
+}
+
+// DELETE /api/favorites/{eventId}
+if ($method === 'DELETE' && preg_match('#^/api/favorites/(\d+)$#', $path, $matches)) {
+    $user = getAuthenticatedUser();
+    if ($user === null) {
+        sendJson([
+            'status' => 'error',
+            'message' => 'Unauthorized. Please provide a valid Bearer token.',
+        ], 401);
+    }
+
+    $eventId = (int) $matches[1];
+    removeUserFavorite((int) $user['id'], $eventId);
+    sendJson([
+        'status' => 'success',
+        'message' => 'Event removed from favorites.',
+        'eventId' => $eventId,
+        'isFavorite' => false,
+    ], 200);
 }
 
 // POST /api/events/upload

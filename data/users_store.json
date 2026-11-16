@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "Admin Manager",
+        "email": "admin@eventmanager.com",
+        "password_hash": "$2y$10$LTw4Wskp5OnrVPxSWv/6luZwk/Js4uuIkIBfeD0qCkbGoHpsHBlD2",
+        "role": "ADMIN",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14"
+    },
+    {
+        "id": 2,
+        "name": "Alex User",
+        "email": "user@eventmanager.com",
+        "password_hash": "$2y$10$QmR8We2CTCatg/w9Ot/YH.pmHKcDZwZQIz7lmKwjFbtkKwxskXF06",
+        "role": "USER",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14"
+    }
+]

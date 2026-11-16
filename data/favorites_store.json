@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "userId": 2,
+        "eventId": 1,
+        "createdAt": "2026-11-16 18:16:14"
+    },
+    {
+        "id": 2,
+        "userId": 2,
+        "eventId": 4,
+        "createdAt": "2026-11-16 18:16:14"
+    }
+]

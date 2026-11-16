@@ -799,3 +799,439 @@ function deleteEventById(int $id): bool
     }
     return false;
 }
+
+// ==========================================
+// AUTHENTICATION & USER MANAGEMENT
+// ==========================================
+
+function getSecretKey(): string
+{
+    loadEnv(dirname(__DIR__) . '/.env');
+    return $_ENV['APP_SECRET'] ?? 'event-manager-demo-secret-key-2026';
+}
+
+/**
+ * Path to users JSON storage.
+ */
+function getUsersJsonStorePath(): string
+{
+    $dir = dirname(__DIR__) . '/data';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    return $dir . '/users_store.json';
+}
+
+/**
+ * Path to user favorites JSON storage.
+ */
+function getFavoritesJsonStorePath(): string
+{
+    $dir = dirname(__DIR__) . '/data';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    return $dir . '/favorites_store.json';
+}
+
+/**
+ * Returns default initial users.
+ *
+ * @return list<array<string, mixed>>
+ */
+function getDefaultSeedUsers(): array
+{
+    $now = gmdate('Y-m-d H:i:s');
+    return [
+        [
+            'id' => 1,
+            'name' => 'Admin Manager',
+            'email' => 'admin@eventmanager.com',
+            'password_hash' => password_hash('admin123', PASSWORD_BCRYPT),
+            'role' => 'ADMIN',
+            'createdAt' => $now,
+            'updatedAt' => $now,
+        ],
+        [
+            'id' => 2,
+            'name' => 'Alex User',
+            'email' => 'user@eventmanager.com',
+            'password_hash' => password_hash('user123', PASSWORD_BCRYPT),
+            'role' => 'USER',
+            'createdAt' => $now,
+            'updatedAt' => $now,
+        ],
+    ];
+}
+
+/**
+ * Reads users from JSON file storage.
+ *
+ * @return list<array<string, mixed>>
+ */
+function readUsersJsonStore(): array
+{
+    $path = getUsersJsonStorePath();
+    if (!file_exists($path)) {
+        $seeds = getDefaultSeedUsers();
+        file_put_contents($path, json_encode($seeds, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        return $seeds;
+    }
+
+    $raw = file_get_contents($path);
+    if ($raw === false || trim($raw) === '') {
+        return [];
+    }
+
+    $decoded = json_decode($raw, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+/**
+ * Writes users to JSON file storage.
+ *
+ * @param list<array<string, mixed>> $users
+ */
+function writeUsersJsonStore(array $users): void
+{
+    $path = getUsersJsonStorePath();
+    file_put_contents($path, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+}
+
+/**
+ * Reads user favorites from JSON storage.
+ *
+ * @return list<array<string, mixed>>
+ */
+function readFavoritesJsonStore(): array
+{
+    $path = getFavoritesJsonStorePath();
+    if (!file_exists($path)) {
+        // Initial seed favorite for Alex User -> Google I/O (event 1)
+        $seeds = [
+            [
+                'id' => 1,
+                'userId' => 2,
+                'eventId' => 1,
+                'createdAt' => gmdate('Y-m-d H:i:s'),
+            ],
+        ];
+        file_put_contents($path, json_encode($seeds, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        return $seeds;
+    }
+
+    $raw = file_get_contents($path);
+    if ($raw === false || trim($raw) === '') {
+        return [];
+    }
+
+    $decoded = json_decode($raw, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+/**
+ * Writes user favorites to JSON storage.
+ *
+ * @param list<array<string, mixed>> $favorites
+ */
+function writeFavoritesJsonStore(array $favorites): void
+{
+    $path = getFavoritesJsonStorePath();
+    file_put_contents($path, json_encode($favorites, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+}
+
+/**
+ * Generates a signed authentication token for a user.
+ */
+function generateAuthToken(array $user): string
+{
+    $payload = [
+        'uid' => (int) $user['id'],
+        'email' => (string) $user['email'],
+        'role' => (string) ($user['role'] ?? 'USER'),
+        'exp' => time() + (86400 * 30), // 30 days
+    ];
+
+    $encoded = rtrim(strtr(base64_encode((string) json_encode($payload)), '+/', '-_'), '=');
+    $sig = hash_hmac('sha256', $encoded, getSecretKey());
+    return "{$encoded}.{$sig}";
+}
+
+/**
+ * Verifies and decodes an authentication token.
+ *
+ * @return array<string, mixed>|null
+ */
+function verifyAuthToken(string $token): ?array
+{
+    $parts = explode('.', $token);
+    if (count($parts) !== 2) {
+        return null;
+    }
+
+    [$encoded, $sig] = $parts;
+    $expectedSig = hash_hmac('sha256', $encoded, getSecretKey());
+    if (!hash_equals($expectedSig, $sig)) {
+        return null;
+    }
+
+    $remainder = strlen($encoded) % 4;
+    if ($remainder) {
+        $encoded .= str_repeat('=', 4 - $remainder);
+    }
+    $json = base64_decode(strtr($encoded, '-_', '+/'));
+    if ($json === false) {
+        return null;
+    }
+
+    $payload = json_decode($json, true);
+    if (!is_array($payload) || !isset($payload['uid'], $payload['exp'])) {
+        return null;
+    }
+
+    if ($payload['exp'] < time()) {
+        return null; // Expired
+    }
+
+    return $payload;
+}
+
+/**
+ * Finds a user by email address.
+ *
+ * @return array<string, mixed>|null
+ */
+function findUserByEmail(string $email): ?array
+{
+    $cleanEmail = strtolower(trim($email));
+
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE LOWER(email) = :email LIMIT 1');
+        $stmt->execute([':email' => $cleanEmail]);
+        $row = $stmt->fetch();
+        return $row !== false ? $row : null;
+    }
+
+    $users = readUsersJsonStore();
+    foreach ($users as $user) {
+        if (strtolower((string) $user['email']) === $cleanEmail) {
+            return $user;
+        }
+    }
+    return null;
+}
+
+/**
+ * Finds a user by ID.
+ *
+ * @return array<string, mixed>|null
+ */
+function findUserById(int $id): ?array
+{
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare('SELECT id, name, email, role, created_at FROM users WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch();
+        return $row !== false ? $row : null;
+    }
+
+    $users = readUsersJsonStore();
+    foreach ($users as $user) {
+        if ((int) $user['id'] === $id) {
+            return [
+                'id' => (int) $user['id'],
+                'name' => (string) $user['name'],
+                'email' => (string) $user['email'],
+                'role' => (string) ($user['role'] ?? 'USER'),
+                'created_at' => $user['createdAt'] ?? gmdate('Y-m-d H:i:s'),
+            ];
+        }
+    }
+    return null;
+}
+
+/**
+ * Registers a new user.
+ *
+ * @return array{id: int, name: string, email: string, role: string}
+ */
+function registerUser(string $name, string $email, string $password, string $role = 'USER'): array
+{
+    $cleanEmail = strtolower(trim($email));
+    $cleanName = trim($name);
+    $cleanRole = in_array(strtoupper(trim($role)), ['ADMIN', 'USER'], true) ? strtoupper(trim($role)) : 'USER';
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+    $now = gmdate('Y-m-d H:i:s');
+
+    if (findUserByEmail($cleanEmail) !== null) {
+        throw new RuntimeException("A user with email '{$cleanEmail}' already exists.");
+    }
+
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare(
+            'INSERT INTO users (name, email, password_hash, role, created_at, updated_at) ' .
+            'VALUES (:name, :email, :password_hash, :role, :created_at, :updated_at) RETURNING id'
+        );
+        $stmt->execute([
+            ':name' => $cleanName,
+            ':email' => $cleanEmail,
+            ':password_hash' => $passwordHash,
+            ':role' => $cleanRole,
+            ':created_at' => $now,
+            ':updated_at' => $now,
+        ]);
+        $newId = (int) $stmt->fetchColumn();
+        return [
+            'id' => $newId,
+            'name' => $cleanName,
+            'email' => $cleanEmail,
+            'role' => $cleanRole,
+        ];
+    }
+
+    $users = readUsersJsonStore();
+    $maxId = 0;
+    foreach ($users as $u) {
+        if (isset($u['id']) && $u['id'] > $maxId) {
+            $maxId = (int) $u['id'];
+        }
+    }
+    $newId = $maxId + 1;
+    $users[] = [
+        'id' => $newId,
+        'name' => $cleanName,
+        'email' => $cleanEmail,
+        'password_hash' => $passwordHash,
+        'role' => $cleanRole,
+        'createdAt' => $now,
+        'updatedAt' => $now,
+    ];
+    writeUsersJsonStore($users);
+
+    return [
+        'id' => $newId,
+        'name' => $cleanName,
+        'email' => $cleanEmail,
+        'role' => $cleanRole,
+    ];
+}
+
+/**
+ * Authenticates a user with email and password.
+ *
+ * @return array{id: int, name: string, email: string, role: string}|null
+ */
+function authenticateUser(string $email, string $password): ?array
+{
+    $user = findUserByEmail($email);
+    if ($user === null) {
+        return null;
+    }
+
+    $hash = (string) ($user['password_hash'] ?? '');
+    if (!password_verify($password, $hash)) {
+        return null;
+    }
+
+    return [
+        'id' => (int) $user['id'],
+        'name' => (string) $user['name'],
+        'email' => (string) $user['email'],
+        'role' => (string) ($user['role'] ?? 'USER'),
+    ];
+}
+
+// ==========================================
+// USER FAVORITES MANAGEMENT
+// ==========================================
+
+/**
+ * Retrieves list of favorite event IDs for a given user.
+ *
+ * @return list<int>
+ */
+function getUserFavoriteEventIds(int $userId): array
+{
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare('SELECT event_id FROM user_favorites WHERE user_id = :uid ORDER BY created_at DESC');
+        $stmt->execute([':uid' => $userId]);
+        $rows = $stmt->fetchAll();
+        return array_map(fn ($r) => (int) $r['event_id'], $rows);
+    }
+
+    $favorites = readFavoritesJsonStore();
+    $ids = [];
+    foreach ($favorites as $f) {
+        if ((int) ($f['userId'] ?? 0) === $userId && isset($f['eventId'])) {
+            $ids[] = (int) $f['eventId'];
+        }
+    }
+    return $ids;
+}
+
+/**
+ * Adds an event to a user's favorites.
+ */
+function addUserFavorite(int $userId, int $eventId): bool
+{
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare(
+            'INSERT INTO user_favorites (user_id, event_id, created_at) ' .
+            'VALUES (:uid, :eid, CURRENT_TIMESTAMP) ON CONFLICT (user_id, event_id) DO NOTHING'
+        );
+        $stmt->execute([':uid' => $userId, ':eid' => $eventId]);
+        return true;
+    }
+
+    $favorites = readFavoritesJsonStore();
+    foreach ($favorites as $f) {
+        if ((int) ($f['userId'] ?? 0) === $userId && (int) ($f['eventId'] ?? 0) === $eventId) {
+            return true; // Already favorited
+        }
+    }
+
+    $maxId = 0;
+    foreach ($favorites as $f) {
+        if (isset($f['id']) && $f['id'] > $maxId) {
+            $maxId = (int) $f['id'];
+        }
+    }
+
+    $favorites[] = [
+        'id' => $maxId + 1,
+        'userId' => $userId,
+        'eventId' => $eventId,
+        'createdAt' => gmdate('Y-m-d H:i:s'),
+    ];
+    writeFavoritesJsonStore($favorites);
+    return true;
+}
+
+/**
+ * Removes an event from a user's favorites.
+ */
+function removeUserFavorite(int $userId, int $eventId): bool
+{
+    if (checkDbHealth()) {
+        $pdo = getDb();
+        $stmt = $pdo->prepare('DELETE FROM user_favorites WHERE user_id = :uid AND event_id = :eid');
+        $stmt->execute([':uid' => $userId, ':eid' => $eventId]);
+        return $stmt->rowCount() > 0;
+    }
+
+    $favorites = readFavoritesJsonStore();
+    $filtered = array_filter($favorites, function ($f) use ($userId, $eventId) {
+        return !((int) ($f['userId'] ?? 0) === $userId && (int) ($f['eventId'] ?? 0) === $eventId);
+    });
+
+    if (count($filtered) !== count($favorites)) {
+        writeFavoritesJsonStore(array_values($filtered));
+        return true;
+    }
+    return false;
+}

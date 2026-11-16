@@ -3,7 +3,7 @@
 HOST ?= 0.0.0.0
 PORT ?= 8080
 
-.PHONY: help run start migrate test-db lint
+.PHONY: help run start migrate seed test-db lint
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -16,6 +16,9 @@ start: run ## Alias for 'run'
 
 migrate: ## Apply database migrations from database/migrations
 	php scripts/migrate.php
+
+seed: ## Populate initial seed data (users, events, sessions, photos, favorites)
+	php scripts/seed.php
 
 test-db: ## Verify PostgreSQL database connectivity
 	php scripts/test-db.php

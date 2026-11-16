@@ -11,8 +11,8 @@
         "description": "Annual community-led developer conference covering modern Android, Jetpack Compose, Gemini AI, and Cloud Architecture.",
         "contactEmail": "gdg-events@techhub.org",
         "contactPhone": "+1 555-0199",
-        "createdAt": "2026-11-01 09:00:00",
-        "updatedAt": "2026-11-01 09:00:00",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14",
         "sessions": [
             {
                 "id": 1,
@@ -48,7 +48,15 @@
                 "description": "Lunch, project demonstrations, and partner career fair."
             }
         ],
-        "images": []
+        "images": [
+            {
+                "id": 1,
+                "eventId": 1,
+                "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Main Auditorium Keynote Stage"
+            }
+        ]
     },
     {
         "id": 2,
@@ -62,8 +70,8 @@
         "description": "The premier conference for developers building with Kotlin on Android, server-side, and cross-platform stacks.",
         "contactEmail": "contact@kotlinconf.com",
         "contactPhone": "+31 20 555 1234",
-        "createdAt": "2026-11-02 10:00:00",
-        "updatedAt": "2026-11-02 10:00:00",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14",
         "sessions": [
             {
                 "id": 4,
@@ -88,7 +96,15 @@
                 "description": "Structuring asynchronous pipelines and error propagation."
             }
         ],
-        "images": []
+        "images": [
+            {
+                "id": 2,
+                "eventId": 2,
+                "imageUrl": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Live Developer Keynote & Q&A"
+            }
+        ]
     },
     {
         "id": 3,
@@ -102,8 +118,8 @@
         "description": "Intensive hands-on workshop covering the New Architecture, Expo Router SDK 58, and native modules integration.",
         "contactEmail": "workshops@mobileguild.dev",
         "contactPhone": "+1 555-0422",
-        "createdAt": "2026-11-03 14:00:00",
-        "updatedAt": "2026-11-03 14:00:00",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14",
         "sessions": [
             {
                 "id": 6,
@@ -117,11 +133,67 @@
                 "description": "Direct C++ communication without serializing JSON over the bridge."
             }
         ],
-        "images": []
+        "images": [
+            {
+                "id": 3,
+                "eventId": 3,
+                "imageUrl": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Hands-on Coding & Architecture Review"
+            }
+        ]
     },
     {
         "id": 4,
         "clientId": 4,
+        "name": "Tech Community Mixer & Pitch Night",
+        "date": "2026-11-28",
+        "location": "Atrium Lounge, Silicon Hub",
+        "organiser": "Founders & Builders Club",
+        "type": "SOCIAL",
+        "status": "UPCOMING",
+        "description": "Casual evening connecting founders, mobile developers, and designers. 5 fast pitches followed by refreshments and open networking.",
+        "contactEmail": "mixer@foundersclub.io",
+        "contactPhone": "+1 555-0811",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14",
+        "sessions": [
+            {
+                "id": 7,
+                "eventId": 4,
+                "sessionId": "SES-30",
+                "name": "Lightning Startup Pitches",
+                "time": "18:00 - 19:00",
+                "type": "PRESENTATION",
+                "speaker": "Community Founders",
+                "room": "Main Stage",
+                "description": "Five 5-minute pitches followed by feedback."
+            },
+            {
+                "id": 8,
+                "eventId": 4,
+                "sessionId": "SES-31",
+                "name": "Open Social & Networking",
+                "time": "19:00 - 21:00",
+                "type": "NETWORKING",
+                "speaker": null,
+                "room": "Atrium Lounge",
+                "description": "Drinks, appetizers, and collaborative discussion."
+            }
+        ],
+        "images": [
+            {
+                "id": 4,
+                "eventId": 4,
+                "imageUrl": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Social Gathering & Pitch Lounge"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "clientId": 5,
         "name": "Cybersecurity In Cloud Operations",
         "date": "2026-10-15",
         "location": "Metropolitan Center",
@@ -131,9 +203,17 @@
         "description": "Executive seminar examining zero-trust security postures and compliance for enterprise workloads.",
         "contactEmail": "info@infosecalliance.org",
         "contactPhone": null,
-        "createdAt": "2026-10-01 08:30:00",
-        "updatedAt": "2026-10-01 08:30:00",
+        "createdAt": "2026-11-16 18:16:14",
+        "updatedAt": "2026-11-16 18:16:14",
         "sessions": [],
-        "images": []
+        "images": [
+            {
+                "id": 5,
+                "eventId": 5,
+                "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "SecOps Conference Room"
+            }
+        ]
     }
 ]
