@@ -362,6 +362,7 @@ function syncEventsPostgres(array $events): array
             )'
         );
 
+        $syncedIds = [];
         foreach ($events as $event) {
             $selectStmt->execute([
                 ':name' => $event['name'],
@@ -392,6 +393,7 @@ function syncEventsPostgres(array $events): array
                 $eventId = (int) $insertStmt->fetchColumn();
             }
 
+            $syncedIds[] = $eventId;
             $eventsSynced++;
 
             $deleteSessionsStmt->execute([':event_id' => $eventId]);
@@ -440,6 +442,11 @@ function syncEventsPostgres(array $events): array
             }
         }
 
+        if (!empty($syncedIds)) {
+            $inClause = implode(',', array_map('intval', $syncedIds));
+            $pdo->exec("DELETE FROM events WHERE id NOT IN ($inClause)");
+        }
+
         $pdo->commit();
 
         return [
@@ -476,10 +483,12 @@ function syncEventsJson(array $events): array
     }
 
     $now = gmdate('Y-m-d H:i:s');
+    $syncedKeys = [];
 
     foreach ($events as $incoming) {
         $name = (string) $incoming['name'];
         $date = (string) $incoming['date'];
+        $syncedKeys[] = strtolower(trim($name)) . '|' . trim($date);
 
         $existingIndex = null;
         foreach ($store as $idx => $ev) {
@@ -564,6 +573,13 @@ function syncEventsJson(array $events): array
         }
 
         $eventsSynced++;
+    }
+
+    if (!empty($syncedKeys)) {
+        $store = array_values(array_filter($store, function ($item) use ($syncedKeys) {
+            $key = strtolower(trim((string)($item['name'] ?? ''))) . '|' . trim((string)($item['date'] ?? ''));
+            return in_array($key, $syncedKeys, true);
+        }));
     }
 
     writeJsonStore($store);
