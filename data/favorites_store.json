@@ -3,12 +3,18 @@
         "id": 1,
         "userId": 2,
         "eventId": 1,
-        "createdAt": "2026-11-16 18:16:14"
+        "createdAt": "2026-11-18 16:10:47"
     },
     {
         "id": 2,
         "userId": 2,
         "eventId": 4,
-        "createdAt": "2026-11-16 18:16:14"
+        "createdAt": "2026-11-18 16:10:47"
+    },
+    {
+        "id": 3,
+        "userId": 2,
+        "eventId": 2,
+        "createdAt": "2026-11-18 16:10:47"
     }
 ]

@@ -3,18 +3,27 @@
         "id": 1,
         "name": "Admin Manager",
         "email": "admin@eventmanager.com",
-        "password_hash": "$2y$10$LTw4Wskp5OnrVPxSWv/6luZwk/Js4uuIkIBfeD0qCkbGoHpsHBlD2",
+        "password_hash": "$2y$10$zzMLNDe6O5M.qbPXrhAMGexmtpCjrGmtsZaR3Q8PDgdUg4qwkQBLW",
         "role": "ADMIN",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14"
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47"
     },
     {
         "id": 2,
         "name": "Alex User",
         "email": "user@eventmanager.com",
-        "password_hash": "$2y$10$QmR8We2CTCatg/w9Ot/YH.pmHKcDZwZQIz7lmKwjFbtkKwxskXF06",
+        "password_hash": "$2y$10$PD4C21N6PymSWiTqRdBIquQfExKe0OigHHvesWp4dek3uWlEkMsam",
         "role": "USER",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14"
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47"
+    },
+    {
+        "id": 3,
+        "name": "Thura Aung",
+        "email": "thura@eventmanager.mm",
+        "password_hash": "$2y$10$0NzdtIr7teD/AQiuI5oaB.PL4Fj836mNMqDJBEALgNGtt8rYy04He",
+        "role": "USER",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47"
     }
 ]

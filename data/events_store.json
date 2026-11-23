@@ -2,50 +2,50 @@
     {
         "id": 1,
         "clientId": 1,
-        "name": "Google I/O Extended 2026",
-        "date": "2026-11-20",
-        "location": "Tech Park Auditorium, Hall A",
-        "organiser": "Google Developer Group",
+        "name": "Myanmar SME & Startup Innovation Expo 2026",
+        "date": "2026-11-28",
+        "location": "Myanmar Expo Hall, Fortune Plaza, Yangon",
+        "organiser": "Myanmar Young Entrepreneurs Association (MYEA)",
         "type": "CONFERENCE",
         "status": "UPCOMING",
-        "description": "Annual community-led developer conference covering modern Android, Jetpack Compose, Gemini AI, and Cloud Architecture.",
-        "contactEmail": "gdg-events@techhub.org",
-        "contactPhone": "+1 555-0199",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14",
+        "description": "National expo uniting over 150 local SMEs, agritech ventures, e-commerce retailers, and venture capital partners exploring sustainable domestic commerce and digital banking.",
+        "contactEmail": "contact@myea.org.mm",
+        "contactPhone": "+95 9 795 112233",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
         "sessions": [
             {
                 "id": 1,
                 "eventId": 1,
-                "sessionId": "SES-01",
-                "name": "Keynote: Next-Gen AI & Mobile",
+                "sessionId": "SME-01",
+                "name": "Keynote: Scaling Local MSMEs in the Digital Era",
                 "time": "09:00 - 10:15",
                 "type": "KEYNOTE",
-                "speaker": "Dr. Sarah Lin (Google)",
-                "room": "Main Hall",
-                "description": "Opening keynote on generative AI models running directly on device."
+                "speaker": "Daw Khin Sandar Tun (President, MYEA)",
+                "room": "Main Grand Hall",
+                "description": "Strategic frameworks for expanding Myanmar domestic brands into regional markets."
             },
             {
                 "id": 2,
                 "eventId": 1,
-                "sessionId": "SES-02",
-                "name": "Hands-on Kotlin Multiplatform",
+                "sessionId": "SME-02",
+                "name": "Fintech Integration: KBZPay, WavePay & QR Payments",
                 "time": "10:30 - 12:00",
                 "type": "WORKSHOP",
-                "speaker": "Marcus Vance",
-                "room": "Lab 3",
-                "description": "Building shared business logic across Android and iOS."
+                "speaker": "U Aung Myo Min",
+                "room": "Workshop Room B",
+                "description": "Practical setup for omni-channel retail payments and reconciliation for small businesses."
             },
             {
                 "id": 3,
                 "eventId": 1,
-                "sessionId": "SES-03",
-                "name": "Networking & Partner Showcase",
-                "time": "12:00 - 13:30",
+                "sessionId": "SME-03",
+                "name": "Founders & Investors Speed Networking",
+                "time": "13:30 - 15:00",
                 "type": "NETWORKING",
                 "speaker": null,
-                "room": "Atrium",
-                "description": "Lunch, project demonstrations, and partner career fair."
+                "room": "Executive Atrium",
+                "description": "Curated 1-on-1 sessions matching regional startups with micro-finance and angel investors."
             }
         ],
         "images": [
@@ -54,165 +54,317 @@
                 "eventId": 1,
                 "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80",
                 "imageData": null,
-                "caption": "Main Auditorium Keynote Stage"
+                "caption": "Main Exhibition Hall & SME Showcases"
             }
         ]
     },
     {
         "id": 2,
         "clientId": 2,
-        "name": "KotlinConf Global Summit",
-        "date": "2026-11-25",
-        "location": "Amsterdam Convention Hall",
-        "organiser": "JetBrains Community",
-        "type": "CONFERENCE",
+        "name": "Yangon Literature & Cultural Arts Festival",
+        "date": "2026-12-05",
+        "location": "The Secretariat (\u101d\u1014\u103a\u1000\u103c\u102e\u1038\u1019\u103b\u102c\u1038\u101b\u102f\u1036\u1038), Yangon",
+        "organiser": "Myanmar Literary & Arts Guild",
+        "type": "SOCIAL",
         "status": "UPCOMING",
-        "description": "The premier conference for developers building with Kotlin on Android, server-side, and cross-platform stacks.",
-        "contactEmail": "contact@kotlinconf.com",
-        "contactPhone": "+31 20 555 1234",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14",
+        "description": "A celebration of Myanmar contemporary writing, poetry, indigenous folklore, and visual arts hosted across the colonial courtyards of the historic Secretariat.",
+        "contactEmail": "info@yangonlitfest.mm",
+        "contactPhone": "+95 9 450 998877",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
         "sessions": [
             {
                 "id": 4,
                 "eventId": 2,
-                "sessionId": "SES-10",
-                "name": "Deep Dive: Compose Multiplatform 2.0",
-                "time": "10:00 - 11:00",
+                "sessionId": "LIT-01",
+                "name": "Modern Burmese Prose & Storytelling in Translation",
+                "time": "10:00 - 11:30",
                 "type": "PRESENTATION",
-                "speaker": "Elena Rostova",
-                "room": "Track 1",
-                "description": "Architecting high-performance UI across desktop, web, and mobile."
+                "speaker": "Sayar Min Lu Tribute Circle",
+                "room": "Heritage Gallery 1",
+                "description": "Preserving historical memoirs and fostering modern Burmese literary translation into international languages."
             },
             {
                 "id": 5,
                 "eventId": 2,
-                "sessionId": "SES-11",
-                "name": "Coroutines Internals and Best Practices",
-                "time": "11:15 - 12:30",
-                "type": "WORKSHOP",
-                "speaker": "Roman Elizarov",
-                "room": "Workshop Studio",
-                "description": "Structuring asynchronous pipelines and error propagation."
+                "sessionId": "LIT-02",
+                "name": "Panel: Safeguarding Ethnic Folktales & Oral Traditions",
+                "time": "13:00 - 14:30",
+                "type": "PANEL_DISCUSSION",
+                "speaker": "Daw Thinzar Myint & Cultural Ethnographers",
+                "room": "Courtyard Stage",
+                "description": "Documenting oral heritage from Shan, Kachin, Chin, and Kayin communities."
+            },
+            {
+                "id": 6,
+                "eventId": 2,
+                "sessionId": "LIT-03",
+                "name": "Acoustic Poetry Recital & Classical Harp Performance",
+                "time": "16:00 - 17:30",
+                "type": "OTHERS",
+                "speaker": "Yangon Youth Poetry Collective",
+                "room": "North Garden Terrace",
+                "description": "Evening poetry recitals accompanied by traditional Myanmar Saung Gauk (harp) music."
             }
         ],
         "images": [
             {
                 "id": 2,
                 "eventId": 2,
-                "imageUrl": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
+                "imageUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
                 "imageData": null,
-                "caption": "Live Developer Keynote & Q&A"
+                "caption": "The Secretariat Heritage Courtyard Book Fair"
             }
         ]
     },
     {
         "id": 3,
         "clientId": 3,
-        "name": "Advanced React Native Masterclass",
-        "date": "2026-12-02",
-        "location": "Design & Code Lab, Room 402",
-        "organiser": "Mobile Creators Guild",
-        "type": "WORKSHOP",
+        "name": "Tazaungdaing Lantern Festival & Community Gala",
+        "date": "2026-11-24",
+        "location": "Mandalay Convention Centre Arena, Mandalay",
+        "organiser": "Upper Myanmar Cultural Heritage Foundation",
+        "type": "OTHER",
         "status": "UPCOMING",
-        "description": "Intensive hands-on workshop covering the New Architecture, Expo Router SDK 58, and native modules integration.",
-        "contactEmail": "workshops@mobileguild.dev",
-        "contactPhone": "+1 555-0422",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14",
+        "description": "Commemorating the festival of lights with traditional lantern displays, artisanal weaving competitions, night bazaar stalls, and community charity distribution.",
+        "contactEmail": "festivals@mandalayheritage.org",
+        "contactPhone": "+95 9 201 334455",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
         "sessions": [
             {
-                "id": 6,
+                "id": 7,
                 "eventId": 3,
-                "sessionId": "SES-20",
-                "name": "JSI and TurboModules from Scratch",
-                "time": "13:00 - 15:00",
+                "sessionId": "TAZ-01",
+                "name": "Traditional Bamboo & Paper Lantern Crafting",
+                "time": "14:00 - 16:00",
                 "type": "WORKSHOP",
-                "speaker": "David Kim",
-                "room": "Room 402",
-                "description": "Direct C++ communication without serializing JSON over the bridge."
+                "speaker": "U Hla Win (Master Craftsman)",
+                "room": "Open Craft Pavilion",
+                "description": "Hands-on workshop teaching traditional Mandalay lantern making techniques for families and youth."
+            },
+            {
+                "id": 8,
+                "eventId": 3,
+                "sessionId": "TAZ-02",
+                "name": "Festival of Lights Opening & Charity Robe Offering",
+                "time": "18:00 - 20:30",
+                "type": "OTHERS",
+                "speaker": "Heritage Preservation Committee",
+                "room": "Grand Arena Stage",
+                "description": "Ceremonial Matho Thingan weaving showcase and evening illumination celebration."
             }
         ],
         "images": [
             {
                 "id": 3,
                 "eventId": 3,
-                "imageUrl": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&auto=format&fit=crop&q=80",
+                "imageUrl": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&auto=format&fit=crop&q=80",
                 "imageData": null,
-                "caption": "Hands-on Coding & Architecture Review"
+                "caption": "Tazaungdaing Night Illuminations & Lanterns"
             }
         ]
     },
     {
         "id": 4,
         "clientId": 4,
-        "name": "Tech Community Mixer & Pitch Night",
-        "date": "2026-11-28",
-        "location": "Atrium Lounge, Silicon Hub",
-        "organiser": "Founders & Builders Club",
-        "type": "SOCIAL",
+        "name": "BarCamp Yangon 2026: Open Tech & Community",
+        "date": "2026-12-12",
+        "location": "MICT Park, Hlaing Township, Yangon",
+        "organiser": "BarCamp Yangon Organizing Committee",
+        "type": "CONFERENCE",
         "status": "UPCOMING",
-        "description": "Casual evening connecting founders, mobile developers, and designers. 5 fast pitches followed by refreshments and open networking.",
-        "contactEmail": "mixer@foundersclub.io",
-        "contactPhone": "+1 555-0811",
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14",
+        "description": "Myanmar's flagship community-driven unconference connecting software engineers, designers, students, and open-source advocates for collaborative knowledge sharing.",
+        "contactEmail": "volunteers@barcampyangon.org",
+        "contactPhone": "+95 9 778 556677",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
         "sessions": [
             {
-                "id": 7,
+                "id": 9,
                 "eventId": 4,
-                "sessionId": "SES-30",
-                "name": "Lightning Startup Pitches",
-                "time": "18:00 - 19:00",
+                "sessionId": "BC-01",
+                "name": "Burmese NLP & LLM Localization Challenges",
+                "time": "09:30 - 10:45",
                 "type": "PRESENTATION",
-                "speaker": "Community Founders",
-                "room": "Main Stage",
-                "description": "Five 5-minute pitches followed by feedback."
+                "speaker": "Ko Thura Aung",
+                "room": "Building 9, Auditorium",
+                "description": "Addressing font encoding, tokenization, and cross-lingual embeddings for the Myanmar language."
             },
             {
-                "id": 8,
+                "id": 10,
                 "eventId": 4,
-                "sessionId": "SES-31",
-                "name": "Open Social & Networking",
-                "time": "19:00 - 21:00",
-                "type": "NETWORKING",
-                "speaker": null,
-                "room": "Atrium Lounge",
-                "description": "Drinks, appetizers, and collaborative discussion."
+                "sessionId": "BC-02",
+                "name": "Hands-on Kotlin & Offline-First Mobile Architectures",
+                "time": "11:00 - 12:30",
+                "type": "WORKSHOP",
+                "speaker": "Ma Ei Phyu Zin",
+                "room": "Lab 3",
+                "description": "Building resilient Room + SQLite mobile workflows for low-connectivity environments."
+            },
+            {
+                "id": 11,
+                "eventId": 4,
+                "sessionId": "BC-03",
+                "name": "Panel: Empowering Women in STEM Across Myanmar",
+                "time": "14:00 - 15:15",
+                "type": "PANEL_DISCUSSION",
+                "speaker": "Myanmar Women in Technology",
+                "room": "Main Hall",
+                "description": "Mentorship programs, remote career paths, and technical leadership for women in tech."
             }
         ],
         "images": [
             {
                 "id": 4,
                 "eventId": 4,
-                "imageUrl": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&auto=format&fit=crop&q=80",
+                "imageUrl": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
                 "imageData": null,
-                "caption": "Social Gathering & Pitch Lounge"
+                "caption": "MICT Park Auditorium Developer Unconference"
             }
         ]
     },
     {
         "id": 5,
         "clientId": 5,
-        "name": "Cybersecurity In Cloud Operations",
-        "date": "2026-10-15",
-        "location": "Metropolitan Center",
-        "organiser": "InfoSec Alliance",
-        "type": "SEMINAR",
-        "status": "COMPLETED",
-        "description": "Executive seminar examining zero-trust security postures and compliance for enterprise workloads.",
-        "contactEmail": "info@infosecalliance.org",
-        "contactPhone": null,
-        "createdAt": "2026-11-16 18:16:14",
-        "updatedAt": "2026-11-16 18:16:14",
-        "sessions": [],
+        "name": "Myanmar Traditional Cuisine & Specialty Coffee Summit",
+        "date": "2026-12-19",
+        "location": "Inya Lake Hotel Ballroom & Lakeside Lawn, Yangon",
+        "organiser": "Myanmar Culinary & Hospitality Guild",
+        "type": "WORKSHOP",
+        "status": "UPCOMING",
+        "description": "Exploring regional gastronomic traditions from Shan, Rakhine, and Mon states, highlighting artisan Laphet (fermented tea) and Ywangan specialty coffee exports.",
+        "contactEmail": "events@myanmarculinary.org",
+        "contactPhone": "+95 9 420 112233",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
+        "sessions": [
+            {
+                "id": 12,
+                "eventId": 5,
+                "sessionId": "CUL-01",
+                "name": "The Chemistry and Art of Shan Laphet Fermentation",
+                "time": "10:00 - 11:30",
+                "type": "WORKSHOP",
+                "speaker": "Daw May Thet (Culinary Heritage Scholar)",
+                "room": "Culinary Demonstration Studio",
+                "description": "Traditional fermentation cycles, quality grading, and pairing tea leaf salad with regional staples."
+            },
+            {
+                "id": 13,
+                "eventId": 5,
+                "sessionId": "CUL-02",
+                "name": "Ywangan to Global Cafes: Single-Origin Coffee Cupping",
+                "time": "13:00 - 14:30",
+                "type": "WORKSHOP",
+                "speaker": "Southern Shan Coffee Growers Co-op",
+                "room": "Lakeside Tasting Deck",
+                "description": "Live cupping and sensory assessment of Arabica varieties cultivated in Southern Shan State."
+            }
+        ],
         "images": [
             {
                 "id": 5,
                 "eventId": 5,
-                "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+                "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80",
                 "imageData": null,
-                "caption": "SecOps Conference Room"
+                "caption": "Culinary Masterclass & Artisan Tasting Pavilion"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "clientId": 6,
+        "name": "Mandalay Youth Healthcare & Mental Wellness Seminar",
+        "date": "2026-10-20",
+        "location": "University of Medicine Mandalay Auditorium, Mandalay",
+        "organiser": "Myanmar Medical Students Association (MMSA)",
+        "type": "SEMINAR",
+        "status": "COMPLETED",
+        "description": "An educational public healthcare initiative addressing university student wellness, stress management, and community health volunteer training.",
+        "contactEmail": "wellness@mmsa-myanmar.org",
+        "contactPhone": "+95 9 965 432100",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
+        "sessions": [
+            {
+                "id": 14,
+                "eventId": 6,
+                "sessionId": "MED-01",
+                "name": "De-stigmatizing Mental Health Support in Higher Ed",
+                "time": "09:00 - 10:30",
+                "type": "KEYNOTE",
+                "speaker": "Dr. Kyaw Swar Myint",
+                "room": "Medical Hall A",
+                "description": "Evidence-based strategies for student peer counseling, emotional resilience, and clinical support."
+            },
+            {
+                "id": 15,
+                "eventId": 6,
+                "sessionId": "MED-02",
+                "name": "Mindfulness and Breathing Techniques Workshop",
+                "time": "11:00 - 12:15",
+                "type": "WORKSHOP",
+                "speaker": "Dr. Nilar Win",
+                "room": "Studio 2",
+                "description": "Interactive guided relaxation routines designed for demanding academic schedules."
+            }
+        ],
+        "images": [
+            {
+                "id": 6,
+                "eventId": 6,
+                "imageUrl": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Public Health Seminar at University of Medicine"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "clientId": 7,
+        "name": "Yangon Clean Energy & Sustainability Roundtable",
+        "date": "2027-01-15",
+        "location": "Lotte Hotel Yangon, Crystal Ballroom, Yangon",
+        "organiser": "Green Myanmar Sustainable Development Initiative",
+        "type": "SEMINAR",
+        "status": "UPCOMING",
+        "description": "High-level forum convening engineers, municipal planners, and environmental scientists to discuss rooftop solar grids, waste recycling, and urban greenery.",
+        "contactEmail": "forum@greenmyanmar.org",
+        "contactPhone": "+95 9 765 890123",
+        "createdAt": "2026-11-18 16:10:47",
+        "updatedAt": "2026-11-18 16:10:47",
+        "sessions": [
+            {
+                "id": 16,
+                "eventId": 7,
+                "sessionId": "ENV-01",
+                "name": "Decentralized Solar & Battery Microgrids for Communities",
+                "time": "09:30 - 11:00",
+                "type": "PRESENTATION",
+                "speaker": "U Zaw Min Oo (Renewable Energy Lead)",
+                "room": "Crystal Ballroom",
+                "description": "Case studies on cost-effective commercial rooftop photovoltaic setups in Yangon industrial zones."
+            },
+            {
+                "id": 17,
+                "eventId": 7,
+                "sessionId": "ENV-02",
+                "name": "Panel: Circular Economy & Municipal Waste Reduction",
+                "time": "11:30 - 13:00",
+                "type": "PANEL_DISCUSSION",
+                "speaker": "Urban Recycling Advocates & Civic Leaders",
+                "room": "Meeting Suite 3",
+                "description": "Practical roadmaps for plastic reduction and neighborhood composting programs."
+            }
+        ],
+        "images": [
+            {
+                "id": 7,
+                "eventId": 7,
+                "imageUrl": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&auto=format&fit=crop&q=80",
+                "imageData": null,
+                "caption": "Sustainability Forum at Lotte Hotel Ballroom"
             }
         ]
     }
